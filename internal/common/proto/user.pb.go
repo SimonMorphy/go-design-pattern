@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.4
 // 	protoc        v4.25.7
-// source: user.proto
+// source: repository.proto
 
 package proto
 
@@ -163,13 +163,13 @@ func file_user_proto_rawDescGZIP() []byte {
 
 var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_user_proto_goTypes = []any{
-	(*User)(nil),              // 0: user.User
-	(*CreateUserRequest)(nil), // 1: user.CreateUserRequest
+	(*User)(nil),              // 0: repository.User
+	(*CreateUserRequest)(nil), // 1: repository.CreateUserRequest
 	(*emptypb.Empty)(nil),     // 2: google.protobuf.Empty
 }
 var file_user_proto_depIdxs = []int32{
-	1, // 0: user.UserService.Create:input_type -> user.CreateUserRequest
-	2, // 1: user.UserService.Create:output_type -> google.protobuf.Empty
+	1, // 0: repository.UserService.Create:input_type -> repository.CreateUserRequest
+	2, // 1: repository.UserService.Create:output_type -> google.protobuf.Empty
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

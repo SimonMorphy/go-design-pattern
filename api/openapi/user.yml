@@ -18,7 +18,7 @@ paths:
   /users:
     post:
       tags: [Users]
-      summary: Create a new user
+      summary: Create a new repository
       description: |
         Register a new user account with validation checks.
         - Username must be unique
@@ -46,7 +46,7 @@ paths:
             Location:
               schema:
                 type: string
-              description: URI of created user
+              description: URI of created repository
           content:
             application/json:
               schema:
@@ -77,7 +77,7 @@ paths:
   /users/{id}:
     get:
       tags: [Users]
-      summary: Get user by ID
+      summary: Get repository by ID
       operationId: getUserById
       parameters:
         - $ref: '#/components/parameters/userId'
@@ -93,8 +93,8 @@ paths:
 
     put:
       tags: [Users]
-      summary: Update user details
-      description: Full update of user information
+      summary: Update repository details
+      description: Full update of repository information
       operationId: updateUser
       parameters:
         - $ref: '#/components/parameters/userId'
@@ -200,7 +200,7 @@ components:
       schema:
         type: integer
         format: int64
-      description: Numeric ID of the user
+      description: Numeric ID of the repository
     page:
       name: page
       in: query

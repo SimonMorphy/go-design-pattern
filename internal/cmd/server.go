@@ -1,9 +1,11 @@
 package main
 
 import (
-	"github.com/SimonMorphy/go-design-pattern/internal/app"
+	"context"
 	"github.com/SimonMorphy/go-design-pattern/internal/common"
 	"github.com/SimonMorphy/go-design-pattern/internal/ports"
+	"github.com/SimonMorphy/go-design-pattern/internal/user/app"
+	"github.com/SimonMorphy/go-design-pattern/internal/user/app/query"
 	"github.com/labstack/echo/v4"
 )
 
@@ -17,7 +19,10 @@ func NewHttpServer(app app.Application, baseResponse common.BaseResponse) *HttpS
 }
 
 func (h HttpServer) ListUsers(ctx echo.Context, params users.ListUsersParams) error {
-	userList, err := h.App.Queries.List.Handle(ctx, params.Page, params.Limit)
+	userList, err := h.App.Queries.List.Handle(context.Background(), query.ListUser{
+		Offset: *params.Page,
+		Limit:  *params.Limit,
+	})
 	if err != nil {
 		h.BaseResponse.Error(ctx, err)
 		return err

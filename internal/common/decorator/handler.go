@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Handler <-* Impl Here *-> DecoratorPattern
 type Handler[In, Out any] interface {
 	Handle(ctx context.Context, query In) (Out, error)
 }
