@@ -23,20 +23,20 @@ type getUserHandler struct {
 }
 
 func (g getUserHandler) Handle(ctx context.Context, query GetUser) (*GetUserResult, error) {
-	result, err := g.cache.Get(ctx, query.ID)
-	if err == nil {
-		return &GetUserResult{
-			Usr: result,
-		}, nil
-	}
-	result, err = g.repository.Get(ctx, query.ID)
+	//result, err := g.cache.Get(ctx, query.ID)
+	//if err == nil {
+	//	return &GetUserResult{
+	//		Usr: result,
+	//	}, nil
+	//}
+	result, err := g.repository.Get(ctx, query.ID)
 	if result == nil {
 		err = errors.NewWithError(errors.ErrnoUserNotFoundError, err)
 	}
-	_, err = g.cache.Create(ctx, result)
-	if err != nil {
-		logrus.Error(err)
-	}
+	//_, err = g.cache.Create(ctx, result)
+	//if err != nil {
+	//	logrus.Error(err)
+	//}
 	return &GetUserResult{
 		Usr: result,
 	}, err

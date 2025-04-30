@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"github.com/SimonMorphy/go-design-pattern/internal/user/adapter/cache"
 	external "github.com/SimonMorphy/go-design-pattern/internal/user/adapter/external"
 	domain "github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
 	"github.com/sirupsen/logrus"
@@ -12,9 +11,9 @@ type DataBase string
 type Cache string
 
 const (
-	MYSQL  DataBase = "mysql"
-	MONGO  DataBase = "mongo"
-	MEMORY DataBase = "memory"
+	MYSQL DataBase = "mysql"
+	MONGO DataBase = "mongo"
+	JSON  DataBase = "json"
 )
 
 // NewUserRepository <-* Impl Here *-> SimpleFactoryPattern
@@ -24,8 +23,8 @@ func NewUserRepository() (domain.Repository, func()) {
 		return external.NewMysqlUserRepository()
 	case MONGO:
 		return external.NewMongoDBUserRepository()
-	case MEMORY:
-		return cache.NewMemoryUserRepository()
+	case JSON:
+		return external.NewJsonUserRepository()
 	default:
 		logrus.Panic("No Such DataBase")
 		return nil, nil
@@ -55,5 +54,5 @@ type MemoryRepositoryFactory struct {
 }
 
 func (m MemoryRepositoryFactory) create() (domain.Repository, func()) {
-	return cache.NewMemoryUserRepository()
+	panic("TODO")
 }

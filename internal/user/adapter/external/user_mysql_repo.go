@@ -13,8 +13,14 @@ type MysqlUserRepository struct {
 }
 
 func (m MysqlUserRepository) Delete(ctx context.Context, ID uint) error {
-	//TODO implement me
-	panic("implement me")
+	var usr domain.Usr
+	usr.ID = ID
+	tx := m.DB.WithContext(ctx).Delete(&usr)
+	if tx.Error != nil {
+		logrus.Error(tx.Error)
+		return tx.Error
+	}
+	return nil
 }
 
 func NewMysqlUserRepository() (*MysqlUserRepository, func()) {

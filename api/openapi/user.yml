@@ -18,7 +18,7 @@ paths:
   /users:
     post:
       tags: [Users]
-      summary: Create a new repository
+      summary: Create a new user
       description: |
         Register a new user account with validation checks.
         - Username must be unique
@@ -46,7 +46,7 @@ paths:
             Location:
               schema:
                 type: string
-              description: URI of created repository
+              description: URI of created user
           content:
             application/json:
               schema:
@@ -77,7 +77,7 @@ paths:
   /users/{id}:
     get:
       tags: [Users]
-      summary: Get repository by ID
+      summary: Get user by ID
       operationId: getUserById
       parameters:
         - $ref: '#/components/parameters/userId'
@@ -93,8 +93,8 @@ paths:
 
     put:
       tags: [Users]
-      summary: Update repository details
-      description: Full update of repository information
+      summary: Update user details
+      description: Full update of user information
       operationId: updateUser
       parameters:
         - $ref: '#/components/parameters/userId'
@@ -113,6 +113,19 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
         '400':
           description: Invalid input
+        '404':
+          description: User not found
+
+    delete:
+      tags: [Users]
+      summary: Delete user by ID
+      description: Permanently delete a user account
+      operationId: deleteUser
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '204':
+          description: User deleted successfully
         '404':
           description: User not found
 
@@ -200,7 +213,7 @@ components:
       schema:
         type: integer
         format: int64
-      description: Numeric ID of the repository
+      description: Numeric ID of the user
     page:
       name: page
       in: query

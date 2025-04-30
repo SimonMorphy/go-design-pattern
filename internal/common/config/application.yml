@@ -19,3 +19,12 @@ mongo:
   password: password
   database: gdp
   collection: users
+
+json:
+  file: ./deployment/data.json
+
+redis:
+
+
+
+memory:

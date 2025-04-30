@@ -16,6 +16,7 @@ type Application struct {
 type Command struct {
 	Create cmd.CreateUserHandler
 	Update cmd.UpdateUserHandler
+	Delete cmd.DeleteUserHandler
 }
 
 type Queries struct {
@@ -34,6 +35,7 @@ func NewApplication() Application {
 		Command{
 			Create: cmd.NewCreateUsrHandler(repository, logger, todoMetrics),
 			Update: cmd.NewUpdateHandler(repository, logger, todoMetrics),
+			Delete: cmd.NewDeleteUsrHandler(repository, logger, todoMetrics),
 		},
 		Queries{
 			Get:  qry.NewGetUserHandler(repository, logger, todoMetrics),

@@ -10,6 +10,7 @@ const (
 	ErrnoFailedConnectionError     = 504
 	ErrnoParameterInputError       = 424
 	ErrnoResourceNotFoundException = 404
+	ErrnoDataParseException        = 405
 
 	ErrnoUnmarshalError = 422
 	ErrnoCastError      = 423
@@ -35,4 +36,5 @@ var ErrMsg = map[int]string{
 	ErrnoInternalServerError:       "internal server error",
 	ErrnoUserTokenInvalid:          "token invalid",
 	ErrnoUserModifyFailedError:     "user modify failed",
+	ErrnoDataParseException:        "data parse exception",
 }

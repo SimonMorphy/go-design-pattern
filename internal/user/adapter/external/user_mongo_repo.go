@@ -22,11 +22,12 @@ type MongoDBUserRepository struct {
 }
 
 func (m MongoDBUserRepository) Delete(ctx context.Context, ID uint) error {
-	//one, err := m.collection().DeleteOne(ctx, bson.M{"id": ID})
-	//if err != nil {
-	//	return err
-	//}
-	panic("implement me")
+	one, err := m.collection().DeleteOne(ctx, bson.M{"id": ID})
+	if err != nil && one.DeletedCount == 0 {
+		logrus.Error(errors.NewWithError(errors.ErrnoInternalServerError, err))
+		return err
+	}
+	return nil
 }
 
 func (m MongoDBUserRepository) collection() *mongo.Collection {
