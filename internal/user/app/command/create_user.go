@@ -9,7 +9,7 @@ import (
 )
 
 type CreateUser struct {
-	usr *dto.Usr
+	Usr *dto.Usr
 }
 
 type CreateUserResult struct {
@@ -23,7 +23,7 @@ type createUserHandler struct {
 }
 
 func (c createUserHandler) Handle(ctx context.Context, query CreateUser) (*CreateUserResult, error) {
-	id, err := c.repo.Create(ctx, query.usr.ToDomain())
+	id, err := c.repo.Create(ctx, query.Usr.ToDomain())
 	if err != nil {
 		return nil, err
 	}

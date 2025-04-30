@@ -23,6 +23,7 @@ func (e *Error) Error() string {
 func New(code int) error {
 	return &Error{
 		code: code,
+		err:  errors.New(ErrMsg[code]),
 	}
 }
 

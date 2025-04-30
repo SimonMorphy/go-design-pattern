@@ -3,7 +3,7 @@ package models
 import (
 	"fmt"
 	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
-	"github.com/SimonMorphy/go-design-pattern/internal/common/infrastructure/creational"
+	"github.com/SimonMorphy/go-design-pattern/internal/infrastructure/creational"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	driver "gorm.io/driver/mysql"
@@ -57,14 +57,14 @@ func MysqlSupplier() (_ interface{}, err error) {
 	return db, nil
 }
 
-func InitMysql() (*gorm.DB, error) {
+func InitMysql() (*gorm.DB, func(string), error) {
 	mysqlFactory.Register("mysql", MysqlSupplier)
 	db, err := GetMysql()
 	if err != nil {
 		logrus.Error(err)
-		return nil, errors.New(errors.ErrnoInternalServerError)
+		return nil, nil, errors.New(errors.ErrnoInternalServerError)
 	}
-	return db, nil
+	return db, mysqlFactory.Clear, nil
 }
 func GetMysql() (*gorm.DB, error) {
 	get, err := mysqlFactory.Get("mysql")

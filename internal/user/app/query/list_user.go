@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
 
 	"github.com/SimonMorphy/go-design-pattern/internal/common/decorator"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
@@ -23,6 +24,9 @@ type listUserHandler struct {
 }
 
 func (l listUserHandler) Handle(ctx context.Context, query ListUser) (*ListUserResult, error) {
+	if query.Offset < 1 || query.Limit < 0 {
+		return nil, errors.New(errors.ErrnoParameterInputError)
+	}
 	list, err := l.repository.List(ctx, query.Offset, query.Limit)
 	if err != nil {
 		logrus.Error(err)

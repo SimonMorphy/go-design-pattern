@@ -12,14 +12,21 @@ type MysqlUserRepository struct {
 	DB *gorm.DB
 }
 
-func NewMysqlUserRepository() MysqlUserRepository {
-	db, err := models.InitMysql()
+func (m MysqlUserRepository) Delete(ctx context.Context, ID uint) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func NewMysqlUserRepository() (*MysqlUserRepository, func()) {
+	db, cleanUp, err := models.InitMysql()
 	if err != nil {
 		logrus.Panic(err)
 	}
-	return MysqlUserRepository{
-		DB: db,
-	}
+	return &MysqlUserRepository{
+			DB: db,
+		}, func() {
+			cleanUp("mysql")
+		}
 }
 func (m MysqlUserRepository) List(ctx context.Context, off, lim int) ([]*domain.Usr, error) {
 	var users []*domain.Usr
@@ -54,7 +61,8 @@ func (m MysqlUserRepository) Update(ctx context.Context, usr *domain.Usr, fun fu
 		logrus.Error(err)
 		return err
 	}
-	tx := m.DB.WithContext(ctx).Updates(newUsr)
+	logrus.Infof("%+v", newUsr)
+	tx := m.DB.WithContext(ctx).Where("id=?", usr.ID).Updates(newUsr)
 	if tx.Error != nil {
 		return tx.Error
 	}

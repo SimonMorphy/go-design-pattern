@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
-	"github.com/SimonMorphy/go-design-pattern/internal/common/infrastructure/creational"
+	"github.com/SimonMorphy/go-design-pattern/internal/infrastructure/creational"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -33,7 +33,7 @@ func (d MongoDB) DSN() string {
 
 func MongoDBSupplier() (_ interface{}, err error) {
 	var client *mongo.Client
-	err = viper.UnmarshalKey("mongo", mongodb)
+	err = viper.UnmarshalKey("mongo", &mongodb)
 	if err != nil {
 		logrus.Error(err)
 		return nil, err
@@ -57,14 +57,14 @@ func MongoDBSupplier() (_ interface{}, err error) {
 	return client, nil
 }
 
-func InitMongoDB() (*mongo.Client, error) {
+func InitMongoDB() (*mongo.Client, func(string), error) {
 	mongodbFactory.Register("mongodb", MongoDBSupplier)
 	client, err := GetMongoDB()
 	if err != nil {
 		logrus.Error(err)
-		return nil, errors.New(errors.ErrnoInternalServerError)
+		return nil, nil, errors.New(errors.ErrnoInternalServerError)
 	}
-	return client, nil
+	return client, mongodbFactory.Clear, nil
 }
 
 func GetMongoDB() (*mongo.Client, error) {

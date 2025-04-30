@@ -3,19 +3,52 @@ package cache
 import (
 	"context"
 	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	"github.com/SimonMorphy/go-design-pattern/internal/infrastructure/creational"
 	domain "github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"sync"
 )
 
+var memoryRepositoryFactory = creational.NewSingletonFactory()
+
 type MemoryUserRepository struct {
 	lock *sync.RWMutex
 	data []*domain.Usr
 }
 
-func NewMemoryUserRepository() *MemoryUserRepository {
-	return &MemoryUserRepository{lock: &sync.RWMutex{}, data: make([]*domain.Usr, 0)}
+func (m *MemoryUserRepository) Delete(ctx context.Context, ID uint) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func MemoryRepositorySupplier() (interface{}, error) {
+	return &MemoryUserRepository{lock: &sync.RWMutex{}, data: make([]*domain.Usr, 0)}, nil
+}
+
+func GetMemoryRepository() (*MemoryUserRepository, error) {
+	repo, err := memoryRepositoryFactory.Get("memory")
+	if err != nil {
+		logrus.Panic(errors.NewWithError(errors.ErrnoInternalServerError, err))
+		return nil, err
+	}
+	repository, ok := repo.(*MemoryUserRepository)
+	if !ok {
+		logrus.Panic(errors.New(errors.ErrnoCastError))
+	}
+	return repository, nil
+}
+
+func NewMemoryUserRepository() (*MemoryUserRepository, func()) {
+	memoryRepositoryFactory.Register("memory", MemoryRepositorySupplier)
+	repository, err := GetMemoryRepository()
+	if err != nil {
+		logrus.Panic(errors.NewWithError(errors.ErrnoInternalServerError, err))
+		return nil, nil
+	}
+	return repository, func() {
+		memoryRepositoryFactory.Clear("memory")
+	}
 }
 
 func (m *MemoryUserRepository) List(_ context.Context, off, lim int) ([]*domain.Usr, error) {
@@ -38,12 +71,11 @@ func (m *MemoryUserRepository) Create(ctx context.Context, usr *domain.Usr) (uin
 	defer m.lock.Unlock()
 
 	newUUID, _ := uuid.NewUUID()
-	_usr, err := domain.NewUser(usr.Username, usr.Password, usr.Email, usr.Mobile, usr.Address)
+	_usr, err := domain.NewUser(uint(newUUID.ID()), usr.Username, usr.Password, usr.Email, usr.Mobile, usr.Address)
 	if err != nil {
 		logrus.Error(err)
 		return 0, err
 	}
-	_usr.ID = uint(newUUID.ID())
 	m.data = append(m.data, _usr)
 	logrus.WithContext(ctx).WithFields(logrus.Fields{
 		"insert_user":       _usr,

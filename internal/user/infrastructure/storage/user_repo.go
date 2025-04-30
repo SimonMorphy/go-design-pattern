@@ -2,7 +2,7 @@ package storage
 
 import (
 	"github.com/SimonMorphy/go-design-pattern/internal/user/adapter/cache"
-	external2 "github.com/SimonMorphy/go-design-pattern/internal/user/adapter/external"
+	external "github.com/SimonMorphy/go-design-pattern/internal/user/adapter/external"
 	domain "github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -18,17 +18,17 @@ const (
 )
 
 // NewUserRepository <-* Impl Here *-> SimpleFactoryPattern
-func NewUserRepository() domain.Repository {
+func NewUserRepository() (domain.Repository, func()) {
 	switch DataBase(viper.GetString("database.use")) {
 	case MYSQL:
-		return external2.NewMysqlUserRepository()
+		return external.NewMysqlUserRepository()
 	case MONGO:
-		return external2.NewMongoDBUserRepository()
+		return external.NewMongoDBUserRepository()
 	case MEMORY:
 		return cache.NewMemoryUserRepository()
 	default:
 		logrus.Panic("No Such DataBase")
-		return nil
+		return nil, nil
 	}
 }
 
@@ -40,20 +40,20 @@ type RepositoryFactory interface {
 type MysqlRepositoryFactory struct {
 }
 
-func (m MysqlRepositoryFactory) create() domain.Repository {
-	return external2.NewMysqlUserRepository()
+func (m MysqlRepositoryFactory) create() (domain.Repository, func()) {
+	return external.NewMysqlUserRepository()
 }
 
 type MongoRepositoryFactory struct {
 }
 
-func (m MongoRepositoryFactory) create() domain.Repository {
-	return external2.NewMongoDBUserRepository()
+func (m MongoRepositoryFactory) create() (domain.Repository, func()) {
+	return external.NewMongoDBUserRepository()
 }
 
 type MemoryRepositoryFactory struct {
 }
 
-func (m MemoryRepositoryFactory) create() domain.Repository {
+func (m MemoryRepositoryFactory) create() (domain.Repository, func()) {
 	return cache.NewMemoryUserRepository()
 }

@@ -14,8 +14,9 @@ const (
 	ErrnoUnmarshalError = 422
 	ErrnoCastError      = 423
 
-	ErrnoUserTokenInvalid  = 602
-	ErrnoUserNotFoundError = 604
+	ErrnoUserTokenInvalid      = 602
+	ErrnoUserNotFoundError     = 604
+	ErrnoUserModifyFailedError = 605
 )
 
 var ErrMsg = map[int]string{
@@ -33,4 +34,5 @@ var ErrMsg = map[int]string{
 	ErrnoResourceNotFoundException: "resource not found",
 	ErrnoInternalServerError:       "internal server error",
 	ErrnoUserTokenInvalid:          "token invalid",
+	ErrnoUserModifyFailedError:     "user modify failed",
 }

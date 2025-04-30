@@ -3,7 +3,6 @@ package config
 import (
 	"bytes"
 	"fmt"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -30,7 +29,8 @@ func (f *CustomFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	// 获取调用信息
 	var caller string
 	if entry.HasCaller() {
-		caller = fmt.Sprintf("%s:%d", filepath.Base(entry.Caller.File), entry.Caller.Line)
+		// 使用完整路径
+		caller = fmt.Sprintf("%s:%d", entry.Caller.File, entry.Caller.Line)
 	}
 
 	// 日志级别颜色

@@ -2,6 +2,8 @@ package command
 
 import (
 	"context"
+
+	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
 	"github.com/SimonMorphy/go-design-pattern/internal/common/decorator"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/app/dto"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
@@ -9,8 +11,8 @@ import (
 )
 
 type UpdateUser struct {
-	usr *dto.Usr
-	fn  func(context context.Context, usr *user.Usr) (*user.Usr, error)
+	Usr *dto.Usr
+	Fn  func(context context.Context, usr *user.Usr) (*user.Usr, error)
 }
 
 type UpdateUserHandler decorator.CommandHandler[UpdateUser, interface{}]
@@ -20,14 +22,21 @@ type updateUserHandler struct {
 }
 
 func (u updateUserHandler) Handle(ctx context.Context, query UpdateUser) (interface{}, error) {
-	err := u.repository.Update(ctx, query.usr.ToDomain(), func(_ context.Context, usr *user.Usr) (*user.Usr, error) {
-		return usr, nil
-	})
+	if query.Usr == nil {
+		return nil, errors.New(errors.ErrnoParameterInputError)
+	}
+
+	domainUser := query.Usr.ToDomain()
+	if domainUser == nil {
+		return nil, errors.New(errors.ErrnoParameterInputError)
+	}
+
+	err := u.repository.Update(ctx, domainUser, query.Fn)
 	if err != nil {
 		logrus.Error(err)
 		return nil, err
 	}
-	return nil, nil
+	return domainUser.ID, nil
 }
 
 func NewUpdateHandler(

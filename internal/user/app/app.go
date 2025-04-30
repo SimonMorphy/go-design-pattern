@@ -24,7 +24,10 @@ type Queries struct {
 }
 
 func NewApplication() Application {
-	repository := storage.NewUserRepository()
+	repository, cleanUp := storage.NewUserRepository()
+	defer func() {
+		cleanUp()
+	}()
 	logger := logrus.NewEntry(logrus.StandardLogger())
 	todoMetrics := metrics.NewTodoMetrics()
 	return Application{

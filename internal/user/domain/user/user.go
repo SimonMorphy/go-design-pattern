@@ -6,8 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
-	"github.com/SimonMorphy/go-design-pattern/internal/common/infrastructure/creational"
-	"github.com/go-playground/validator/v10"
+	"github.com/SimonMorphy/go-design-pattern/internal/infrastructure/creational"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -18,13 +17,16 @@ import (
 var tokenSecret = viper.GetString("token-secret")
 
 type Usr struct {
-	gorm.Model
-	Username string `json:"username" validate:"required,min=3,max=20"`
-	Password string `json:"password" validate:"required,min=6,max=32"`
-	Email    string `json:"email" validate:"required,email"`
-	Mobile   string `json:"mobile" validate:"omitempty,e164"`
-	Address  string `json:"address" validate:"omitempty,max=255"`
-	Token    string `json:"token" validate:"omitempty"`
+	ID        uint           `gorm:"primarykey"`
+	CreatedAt *time.Time     `json:"created_at,omitempty" gorm:"autoCreateTime"`
+	UpdatedAt *time.Time     `json:"updated_at,omitempty" gorm:"autoUpdateTime"`
+	Username  string         `json:"username" validate:"required,min=3,max=20"`
+	Password  string         `json:"password" validate:"required,min=6,max=32"`
+	Email     string         `json:"email" validate:"required,email"`
+	Mobile    string         `json:"mobile" validate:"omitempty,e164"`
+	Address   string         `json:"address" validate:"omitempty,max=255"`
+	Token     string         `json:"token" validate:"omitempty"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
 }
 
 func (u *Usr) Clone() creational.Cloneable {
@@ -43,8 +45,12 @@ func (u *Usr) Clone() creational.Cloneable {
 }
 
 func (u *Usr) Print() string {
-	//TODO implement me
-	panic("implement me")
+	jsonStr, err := json.Marshal(u)
+	if err != nil {
+		logrus.Error(err)
+		return ""
+	}
+	return string(jsonStr)
 }
 
 func (u *Usr) TableName() string {
@@ -69,7 +75,7 @@ func (u *Usr) generateToken() {
 		UserId:   u.ID,
 		Username: u.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)), // 设置 token 有效期为 24 小时
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)), // 设置 token 有效期为 24 小时
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 		},
@@ -77,7 +83,7 @@ func (u *Usr) generateToken() {
 	// 创建一个新的 token 对象，指定签名方法为 HS256
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	// 使用指定的密钥对 token 进行签名
-	tokenStr, err := token.SignedString(tokenSecret)
+	tokenStr, err := token.SignedString([]byte(tokenSecret))
 	if err != nil {
 		logrus.Error(err)
 		return
@@ -90,7 +96,7 @@ func (u *Usr) IsExpired() error {
 		// 验证签名方法
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 
-			return nil, errors.NewWithMsgf(603, "unexpected signing method: %v", token.Header["alg"])
+			return nil, errors.New(errors.ErrnoUserTokenInvalid)
 		}
 		return tokenSecret, nil
 	})
@@ -104,16 +110,10 @@ func (u *Usr) IsExpired() error {
 	return errors.New(errors.ErrnoUserTokenInvalid)
 }
 
-func NewUser(username string, password string, email string, mobile string, address string) (usr *Usr, err error) {
-	user := &Usr{Username: username, Password: password, Email: email, Mobile: mobile, Address: address}
+func NewUser(id uint, username string, password string, email string, mobile string, address string) (usr *Usr, err error) {
+	user := &Usr{ID: id, Username: username, Password: password, Email: email, Mobile: mobile, Address: address}
 	user.generateToken()
 	user.encryptPassword()
-	va := validator.New()
-	err = va.Struct(usr)
-	if err != nil {
-		logrus.Error(err)
-		return nil, err
-	}
 	return user, nil
 }
 

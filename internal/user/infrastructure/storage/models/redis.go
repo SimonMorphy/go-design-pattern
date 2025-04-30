@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
-	"github.com/SimonMorphy/go-design-pattern/internal/common/infrastructure/creational"
+	"github.com/SimonMorphy/go-design-pattern/internal/infrastructure/creational"
 	driver "github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
