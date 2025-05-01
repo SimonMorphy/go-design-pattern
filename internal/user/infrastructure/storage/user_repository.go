@@ -8,7 +8,6 @@ import (
 )
 
 type DataBase string
-type Cache string
 
 const (
 	MYSQL DataBase = "mysql"

@@ -16,14 +16,11 @@ var (
 	redisFactory = creational.NewSingletonFactory()
 )
 
-const (
-	confName = "redis"
-	typeName = "redis"
-)
-
 type Redis struct {
 	IP           string        `mapstructure:"ip"`
 	Port         string        `mapstructure:"port"`
+	User         string        `mapstructure:"user"`
+	Password     string        `mapstructure:"password"`
 	PoolSize     int           `mapstructure:"pool_size"`
 	MaxConn      int           `mapstructure:"max_conn"`
 	ConnTimeout  time.Duration `mapstructure:"conn_timeout"`
@@ -34,6 +31,8 @@ type Redis struct {
 func (r Redis) Config() *driver.Options {
 	return &driver.Options{
 		Network:         "tcp",
+		Username:        r.User,
+		Password:        r.Password,
 		Addr:            fmt.Sprintf("%s:%s", r.IP, r.Port),
 		PoolSize:        r.PoolSize,
 		MaxActiveConns:  r.MaxConn,
@@ -44,7 +43,7 @@ func (r Redis) Config() *driver.Options {
 }
 
 func redisSupplier() (interface{}, error) {
-	if err := viper.UnmarshalKey(confName, &redis); err != nil {
+	if err := viper.UnmarshalKey("redis", &redis); err != nil {
 		logrus.Error(err)
 		return nil, errors.NewWithError(errors.ErrnoUnmarshalError, err)
 	}
@@ -55,18 +54,18 @@ func redisSupplier() (interface{}, error) {
 	return client, nil
 }
 
-func InitRedis() (*driver.Client, error) {
-	redisFactory.Register(typeName, redisSupplier)
+func InitRedis() (*driver.Client, func(string), error) {
+	redisFactory.Register("redis", redisSupplier)
 	client, err := GetRedis()
 	if err != nil {
 		logrus.Error(err)
-		return nil, errors.NewWithError(errors.ErrnoInternalServerError, err)
+		return nil, nil, errors.NewWithError(errors.ErrnoInternalServerError, err)
 	}
-	return client, nil
+	return client, redisFactory.Clear, nil
 }
 
 func GetRedis() (*driver.Client, error) {
-	instance, err := redisFactory.Get(typeName)
+	instance, err := redisFactory.Get("redis")
 	if err != nil {
 		return nil, err
 	}

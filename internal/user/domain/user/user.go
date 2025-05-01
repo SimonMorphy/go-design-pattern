@@ -3,10 +3,10 @@ package user
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
 	"github.com/SimonMorphy/go-design-pattern/internal/infrastructure/creational"
+	"github.com/goccy/go-json"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -27,6 +27,14 @@ type Usr struct {
 	Address   string         `json:"address" validate:"omitempty,max=255"`
 	Token     string         `json:"token" validate:"omitempty"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
+}
+
+func (u *Usr) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, u)
+}
+
+func (u *Usr) MarshalBinary() (data []byte, err error) {
+	return json.Marshal(u)
 }
 
 func (u *Usr) Clone() creational.Cloneable {

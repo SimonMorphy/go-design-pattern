@@ -4,6 +4,8 @@ database:
   maxOpenConn: 30
   connMaxLifeTime: 4h
   connMaxIdleTime: 20m
+cache:
+  use: redis
 
 mysql:
   host: 127.0.0.1
@@ -24,7 +26,16 @@ json:
   file: ./deployment/data.json
 
 redis:
+  ip: 127.0.0.1
+  port: 6379
+  pool_size: 100
+  max_conn: 100
+  conn_timeout: 1000
+  read_timeout: 1000
+  write_timeout: 100
 
 
 
 memory:
+  default_expiration: 1h
+  cleanup_interval: 24h

@@ -6,6 +6,7 @@ import (
 	"github.com/SimonMorphy/go-design-pattern/internal/common/decorator"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
 	"github.com/sirupsen/logrus"
+	"time"
 )
 
 type GetUser struct {
@@ -19,38 +20,40 @@ type GetUserResult struct {
 type GetUserHandler decorator.CommandHandler[GetUser, *GetUserResult]
 
 type getUserHandler struct {
-	repository, cache user.Repository
+	repository user.Repository
+	cache      user.Cache
 }
 
 func (g getUserHandler) Handle(ctx context.Context, query GetUser) (*GetUserResult, error) {
-	//result, err := g.cache.Get(ctx, query.ID)
-	//if err == nil {
-	//	return &GetUserResult{
-	//		Usr: result,
-	//	}, nil
-	//}
-	result, err := g.repository.Get(ctx, query.ID)
-	if result == nil {
-		err = errors.NewWithError(errors.ErrnoUserNotFoundError, err)
+	result, err := g.cache.Get(ctx, query.ID)
+	if err == nil {
+		return &GetUserResult{
+			Usr: result,
+		}, nil
 	}
-	//_, err = g.cache.Create(ctx, result)
-	//if err != nil {
-	//	logrus.Error(err)
-	//}
+	result, err = g.repository.Get(ctx, query.ID)
+	if result == nil {
+		return nil, errors.NewWithError(errors.ErrnoUserNotFoundError, err)
+	}
+	err = g.cache.Set(ctx, query.ID, result, time.Hour)
+	if err != nil {
+		logrus.Error(errors.NewWithError(errors.ErrnoCacheSetError, err))
+	}
 	return &GetUserResult{
 		Usr: result,
-	}, err
+	}, nil
 }
 
 func NewGetUserHandler(
 	repository user.Repository,
+	cache user.Cache,
 	logger *logrus.Entry,
 	record decorator.MetricsRecord) GetUserHandler {
 	if repository == nil {
 		logrus.Panic(user.RepositoryEmptyError{})
 	}
 	return decorator.ApplyHandlerDecorators[GetUser, *GetUserResult](
-		&getUserHandler{repository: repository},
+		&getUserHandler{repository: repository, cache: cache},
 		logger,
 		record,
 	)

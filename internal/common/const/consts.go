@@ -15,6 +15,10 @@ const (
 	ErrnoUnmarshalError = 422
 	ErrnoCastError      = 423
 
+	ErrnoCacheSetError = 510
+	ErrnoCacheGetError = 511
+	ErrnoCacheDelError = 512
+
 	ErrnoUserTokenInvalid      = 602
 	ErrnoUserNotFoundError     = 604
 	ErrnoUserModifyFailedError = 605
@@ -37,4 +41,7 @@ var ErrMsg = map[int]string{
 	ErrnoUserTokenInvalid:          "token invalid",
 	ErrnoUserModifyFailedError:     "user modify failed",
 	ErrnoDataParseException:        "data parse exception",
+	ErrnoCacheSetError:             "cache set error",
+	ErrnoCacheGetError:             "cache get error",
+	ErrnoCacheDelError:             "cache del error",
 }

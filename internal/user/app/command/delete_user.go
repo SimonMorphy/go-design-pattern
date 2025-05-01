@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
 	"github.com/SimonMorphy/go-design-pattern/internal/common/decorator"
 	domain "github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
 	"github.com/sirupsen/logrus"
@@ -12,7 +13,8 @@ type DeleteUser uint
 type DeleteUserHandler decorator.CommandHandler[DeleteUser, interface{}]
 
 type deleteUserHandler struct {
-	repo domain.Repository
+	repo  domain.Repository
+	cache domain.Cache
 }
 
 func (d deleteUserHandler) Handle(ctx context.Context, query DeleteUser) (interface{}, error) {
@@ -21,18 +23,23 @@ func (d deleteUserHandler) Handle(ctx context.Context, query DeleteUser) (interf
 		logrus.Error(err)
 		return nil, err
 	}
+	err = d.cache.Delete(ctx, uint(query))
+	if err != nil {
+		logrus.Error(errors.NewWithError(errors.ErrnoCacheDelError, err))
+	}
 	return uint(query), nil
 }
 
 func NewDeleteUsrHandler(
 	repository domain.Repository,
+	cache domain.Cache,
 	logger *logrus.Entry,
 	record decorator.MetricsRecord) DeleteUserHandler {
 	if repository == nil {
 		logrus.Panic(domain.RepositoryEmptyError{})
 	}
 	return decorator.ApplyHandlerDecorators[DeleteUser, interface{}](
-		&deleteUserHandler{repo: repository},
+		&deleteUserHandler{repo: repository, cache: cache},
 		logger,
 		record,
 	)

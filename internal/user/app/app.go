@@ -25,20 +25,22 @@ type Queries struct {
 }
 
 func NewApplication() Application {
-	repository, cleanUp := storage.NewUserRepository()
+	repository, repositoryFn := storage.NewUserRepository()
+	cache, cacheFn := storage.NewUserCache()
 	defer func() {
-		cleanUp()
+		repositoryFn()
+		cacheFn()
 	}()
 	logger := logrus.NewEntry(logrus.StandardLogger())
 	todoMetrics := metrics.NewTodoMetrics()
 	return Application{
 		Command{
-			Create: cmd.NewCreateUsrHandler(repository, logger, todoMetrics),
-			Update: cmd.NewUpdateHandler(repository, logger, todoMetrics),
-			Delete: cmd.NewDeleteUsrHandler(repository, logger, todoMetrics),
+			Create: cmd.NewCreateUsrHandler(repository, cache, logger, todoMetrics),
+			Update: cmd.NewUpdateHandler(repository, cache, logger, todoMetrics),
+			Delete: cmd.NewDeleteUsrHandler(repository, cache, logger, todoMetrics),
 		},
 		Queries{
-			Get:  qry.NewGetUserHandler(repository, logger, todoMetrics),
+			Get:  qry.NewGetUserHandler(repository, cache, logger, todoMetrics),
 			List: qry.NewListUserHandler(repository, logger, todoMetrics),
 		},
 	}
