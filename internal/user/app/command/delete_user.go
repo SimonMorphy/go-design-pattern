@@ -2,7 +2,9 @@ package command
 
 import (
 	"context"
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	"fmt"
+	consts "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 	"github.com/SimonMorphy/go-design-pattern/internal/common/decorator"
 	domain "github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
 	"github.com/sirupsen/logrus"
@@ -23,7 +25,7 @@ func (d deleteUserHandler) Handle(ctx context.Context, query DeleteUser) (interf
 		logrus.Error(err)
 		return nil, err
 	}
-	err = d.cache.Delete(ctx, uint(query))
+	err = d.cache.Delete(ctx, fmt.Sprintf("%s%d", consts.UserPrefix, query))
 	if err != nil {
 		logrus.Error(errors.NewWithError(errors.ErrnoCacheDelError, err))
 	}

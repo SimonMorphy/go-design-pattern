@@ -1,11 +1,11 @@
-package adapter
+package storage
 
 import (
 	"context"
 	"time"
 )
 
-type RepositorySyncAdapter interface {
+type DataSyncAdapter interface {
 	Load(ctx context.Context) error
 	Flush(ctx context.Context) error
 	Persist(ctx context.Context) error

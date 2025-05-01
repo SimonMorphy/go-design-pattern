@@ -1,7 +1,7 @@
 package creational
 
 import (
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 	"sync"
 )
 

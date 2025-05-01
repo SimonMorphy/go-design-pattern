@@ -2,7 +2,9 @@ package query
 
 import (
 	"context"
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	"fmt"
+	"github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	"github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 	"github.com/SimonMorphy/go-design-pattern/internal/common/decorator"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
 	"github.com/sirupsen/logrus"
@@ -25,7 +27,7 @@ type getUserHandler struct {
 }
 
 func (g getUserHandler) Handle(ctx context.Context, query GetUser) (*GetUserResult, error) {
-	result, err := g.cache.Get(ctx, query.ID)
+	result, err := g.cache.Get(ctx, fmt.Sprintf("%s%d", consts.UserPrefix, query.ID))
 	if err == nil {
 		return &GetUserResult{
 			Usr: result,
@@ -35,7 +37,7 @@ func (g getUserHandler) Handle(ctx context.Context, query GetUser) (*GetUserResu
 	if result == nil {
 		return nil, errors.NewWithError(errors.ErrnoUserNotFoundError, err)
 	}
-	err = g.cache.Set(ctx, query.ID, result, time.Hour)
+	err = g.cache.Set(ctx, fmt.Sprintf("%s%d", consts.UserPrefix, result.ID), result, time.Hour)
 	if err != nil {
 		logrus.Error(errors.NewWithError(errors.ErrnoCacheSetError, err))
 	}

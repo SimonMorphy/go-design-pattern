@@ -3,7 +3,7 @@ package models
 import (
 	"context"
 	"fmt"
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 	"github.com/SimonMorphy/go-design-pattern/internal/infrastructure/creational"
 	driver "github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"

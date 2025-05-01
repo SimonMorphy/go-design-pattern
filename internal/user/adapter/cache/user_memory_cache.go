@@ -2,12 +2,11 @@ package cache
 
 import (
 	"context"
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	"github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 	domain "github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/infrastructure/storage/models"
 	"github.com/patrickmn/go-cache"
 	"github.com/sirupsen/logrus"
-	"strconv"
 	"time"
 )
 
@@ -27,8 +26,8 @@ func NewMemoryUserCache() (*MemoryUserCache, func()) {
 		}
 }
 
-func (m MemoryUserCache) Get(_ context.Context, key uint) (*domain.Usr, error) {
-	if usr, b := m.cache.Get(strconv.Itoa(int(key))); b {
+func (m MemoryUserCache) Get(_ context.Context, key string) (*domain.Usr, error) {
+	if usr, b := m.cache.Get(key); b {
 		logrus.WithField("cache", "hit").Infof("user:%v", usr)
 		_usr, ok := usr.(*domain.Usr)
 		if ok {
@@ -40,14 +39,14 @@ func (m MemoryUserCache) Get(_ context.Context, key uint) (*domain.Usr, error) {
 	return nil, errors.New(errors.ErrnoUserNotFoundError)
 }
 
-func (m MemoryUserCache) Set(_ context.Context, key uint, value *domain.Usr, expire time.Duration) error {
-	m.cache.Set(strconv.Itoa(int(key)), value, expire)
+func (m MemoryUserCache) Set(_ context.Context, key string, value *domain.Usr, expire time.Duration) error {
+	m.cache.Set(key, value, expire)
 	logrus.WithField("cache", "set").Infof("user:%+v", value)
 	return nil
 }
 
-func (m MemoryUserCache) Delete(ctx context.Context, key uint) error {
-	m.cache.Delete(strconv.Itoa(int(key)))
+func (m MemoryUserCache) Delete(_ context.Context, key string) error {
+	m.cache.Delete(key)
 	logrus.WithField("cache", "delete").Infof("user:%+v", key)
 	return nil
 }

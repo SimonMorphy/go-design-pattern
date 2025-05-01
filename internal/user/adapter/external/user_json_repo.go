@@ -2,6 +2,7 @@ package external
 
 import (
 	"context"
+	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"io"
@@ -11,7 +12,6 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/sirupsen/logrus"
 
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
 	domain "github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
 )
 

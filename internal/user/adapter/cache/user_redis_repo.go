@@ -2,13 +2,12 @@ package cache
 
 import (
 	"context"
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	"github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 	domain "github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/infrastructure/storage/models"
 	"github.com/goccy/go-json"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
-	"strconv"
 	"time"
 )
 
@@ -26,9 +25,8 @@ func NewRedisUserCache() (*RedisUserCache, func()) {
 	}
 }
 
-func (r RedisUserCache) Get(ctx context.Context, key uint) (*domain.Usr, error) {
-	_key := strconv.FormatUint(uint64(key), 10)
-	data, err := r.cache.Get(ctx, _key).Result()
+func (r RedisUserCache) Get(ctx context.Context, key string) (*domain.Usr, error) {
+	data, err := r.cache.Get(ctx, key).Result()
 	if err != nil {
 		logrus.WithField("cache", "miss").Info()
 		return nil, errors.NewWithError(errors.ErrnoCacheGetError, err)
@@ -42,8 +40,8 @@ func (r RedisUserCache) Get(ctx context.Context, key uint) (*domain.Usr, error) 
 	return &user, nil
 }
 
-func (r RedisUserCache) Set(ctx context.Context, key uint, value *domain.Usr, expire time.Duration) error {
-	_, err := r.cache.Set(ctx, strconv.Itoa(int(key)), value, expire).Result()
+func (r RedisUserCache) Set(ctx context.Context, key string, value *domain.Usr, expire time.Duration) error {
+	_, err := r.cache.Set(ctx, key, value, expire).Result()
 	if err != nil {
 		return errors.NewWithError(errors.ErrnoCacheSetError, err)
 	}
@@ -51,8 +49,8 @@ func (r RedisUserCache) Set(ctx context.Context, key uint, value *domain.Usr, ex
 	return nil
 }
 
-func (r RedisUserCache) Delete(ctx context.Context, key uint) error {
-	_, err := r.cache.Del(ctx, strconv.Itoa(int(key))).Result()
+func (r RedisUserCache) Delete(ctx context.Context, key string) error {
+	_, err := r.cache.Del(ctx, key).Result()
 	if err != nil {
 		return errors.NewWithError(errors.ErrnoCacheDelError, err)
 	}

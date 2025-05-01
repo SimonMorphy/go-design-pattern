@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"github.com/SimonMorphy/go-design-pattern/internal/common"
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 	"github.com/SimonMorphy/go-design-pattern/internal/ports"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/app"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/app/command"

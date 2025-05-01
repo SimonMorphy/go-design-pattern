@@ -3,7 +3,7 @@ package external
 import (
 	"context"
 	"database/sql"
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 	domain "github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/infrastructure/storage/models"
 	"github.com/google/uuid"

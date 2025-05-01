@@ -2,7 +2,9 @@ package command
 
 import (
 	"context"
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	"fmt"
+	consts "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	"github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 	"github.com/SimonMorphy/go-design-pattern/internal/common/decorator"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/app/dto"
 	domain "github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
@@ -30,7 +32,7 @@ func (c createUserHandler) Handle(ctx context.Context, query CreateUser) (*Creat
 	if err != nil {
 		return nil, err
 	}
-	err = c.cache.Delete(ctx, usr.ID)
+	err = c.cache.Delete(ctx, fmt.Sprintf("%s%d", consts.UserPrefix, id))
 	if err != nil {
 		return nil, errors.NewWithError(errors.ErrnoCacheDelError, err)
 	}

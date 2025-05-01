@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 	"github.com/SimonMorphy/go-design-pattern/internal/infrastructure/creational"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"

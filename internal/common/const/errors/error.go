@@ -1,4 +1,4 @@
-package consts
+package errors
 
 const (
 	ErrnoSuccess      = 0

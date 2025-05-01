@@ -2,7 +2,7 @@ package query
 
 import (
 	"context"
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 
 	"github.com/SimonMorphy/go-design-pattern/internal/common/decorator"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"

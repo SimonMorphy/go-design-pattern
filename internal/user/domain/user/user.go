@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	"github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 	"github.com/SimonMorphy/go-design-pattern/internal/infrastructure/creational"
 	"github.com/goccy/go-json"
 	"github.com/golang-jwt/jwt/v5"

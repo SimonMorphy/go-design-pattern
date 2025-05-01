@@ -2,9 +2,11 @@ package command
 
 import (
 	"context"
+	"fmt"
+	consts "github.com/SimonMorphy/go-design-pattern/internal/common/const"
+	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const/errors"
 	"github.com/go-playground/validator/v10"
 
-	errors "github.com/SimonMorphy/go-design-pattern/internal/common/const"
 	"github.com/SimonMorphy/go-design-pattern/internal/common/decorator"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/app/dto"
 	"github.com/SimonMorphy/go-design-pattern/internal/user/domain/user"
@@ -35,7 +37,7 @@ func (u updateUserHandler) Handle(ctx context.Context, query UpdateUser) (interf
 		logrus.Error(err)
 		return nil, err
 	}
-	err = u.cache.Delete(ctx, _usr.ID)
+	err = u.cache.Delete(ctx, fmt.Sprintf("%s%d", consts.UserPrefix, _usr.ID))
 	if err != nil {
 		logrus.Error(errors.NewWithError(errors.ErrnoCacheDelError, err))
 	}
